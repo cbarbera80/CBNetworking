@@ -59,7 +59,7 @@ extension TestEndpoint: EndpointType {
         case .getArticle, .getArticles:
             return nil
         case .searchArticles(_, let pageData):
-            return .encodable(data: pageData)
+            return .jsonEncodable(data: pageData)
         case .postArticle(let article):
             return .multipart(data: [MultipartData(data: "ciao".data(using: .utf8)!, key: "key", fileName: "article_\(article.name)", mimeType: "mimetype")])
         }

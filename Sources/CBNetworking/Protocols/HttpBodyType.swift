@@ -4,17 +4,16 @@ import Foundation
 public enum HTTPBodyType {
     case raw(data: Data)
     case multipart(data: [MultipartData])
-    case encodable(data: Encodable)
+    case jsonEncodable(data: Encodable)
+    case urlEncodable(data: Encodable)
     
     /// Whether or not the type is a multipart type.
     var isMultipart: Bool {
         switch self {
-        case .raw:
+        case .raw, .jsonEncodable, .urlEncodable:
             return false
         case .multipart:
             return true
-        case .encodable:
-            return false
         }
     }
 }

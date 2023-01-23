@@ -126,8 +126,10 @@ class URLRequestBuilder {
             
             return httpMultipartData as Data
             
-        case .encodable(let data):
+        case .jsonEncodable(let data):
             return try? JSONEncoder().encode(data)
+        case .urlEncodable(let data):
+            return data.urlEncodedParameters?.data(using: .utf8)
         }
     }
 }
