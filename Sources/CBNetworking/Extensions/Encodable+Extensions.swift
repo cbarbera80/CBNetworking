@@ -9,7 +9,9 @@ internal extension Encodable {
             return nil
         }
         
-        return dictionary.reduce("") { "\($0!)\($1.0)=\($1.1)&" }
+        let joined = dictionary.reduce("") { "\($0)\($1.0)=\($1.1)&" }
+        let stripped = joined.dropLast()
+        return String(stripped)
     }
 }
 
