@@ -2,11 +2,11 @@ import Foundation
 
 /// The Loggable protocol used to define the behaviour of the logger of the `CBNetworking`
 public protocol Loggable {
-    func log(request: URLRequest) -> String?
-    func log(error: Error) -> String?
+    func log(request: URLRequest)
+    func log(error: Error)
 }
 
 public extension Loggable {
-    func log(request: URLRequest) -> String? { nil }
-    func log(error: Error) -> String? { nil }
+    func log(request: URLRequest) {}
+    func log(error: Error) {}
 }

@@ -6,7 +6,7 @@ public class CurlLogger: Loggable {
     public init() {}
     
     /// The log method.
-    public func log(request: URLRequest) -> String {
+    public func log(request: URLRequest) {
         guard let url = request.url else { return "" }
         var baseCommand = "curl \(url.absoluteString)"
 
@@ -30,10 +30,10 @@ public class CurlLogger: Loggable {
             command.append("-d '\(body)'")
         }
 
-        return command.joined(separator: " \\\n\t")
+        print(command.joined(separator: " \\\n\t"))
     }
     
-    public func log(error: Error) -> String? {
+    public func log(error: Error) {
         print(error.localizedDescription)
     }
 }
