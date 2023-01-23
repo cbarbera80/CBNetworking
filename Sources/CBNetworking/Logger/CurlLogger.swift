@@ -2,7 +2,7 @@ import Foundation
 
 /// A custom logger class used to log the request as cURL.
 public class CurlLogger: Loggable {
-    
+   
     public init() {}
     
     /// The log method.
