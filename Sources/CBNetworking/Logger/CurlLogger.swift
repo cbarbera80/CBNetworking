@@ -7,7 +7,8 @@ public class CurlLogger: Loggable {
     
     /// The log method.
     public func log(request: URLRequest) {
-        guard let url = request.url else { return "" }
+        guard let url = request.url else { return }
+        
         var baseCommand = "curl \(url.absoluteString)"
 
         if request.httpMethod == "HEAD" {
