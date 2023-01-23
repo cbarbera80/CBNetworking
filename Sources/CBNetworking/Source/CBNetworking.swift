@@ -26,14 +26,19 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     public func send<T: Decodable>(endpoint: Endpoint) async throws -> T {
         let request = try getRequest(from: endpoint)
         
-        print(logger?.log(request: request) ?? "")
+        if let logRequest = logger?.log(request: request) {
+            print(logRequest)
+        }
         
         do {
             let (data, _) = try await urlSession.data(from: request)
             let response = try decoder.decode(T.self, from: data)
             return response
         } catch {
-            print(logger?.log(error: error) ?? "")
+            if let logError = logger?.log(error: error) {
+                print(logError)
+            }
+            
             return try await shouldRetrySend(endpoint: endpoint, error: error)
         }
     }

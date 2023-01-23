@@ -32,4 +32,8 @@ public class CurlLogger: Loggable {
 
         return command.joined(separator: " \\\n\t")
     }
+    
+    public func log(error: Error) -> String? {
+        print(error.localizedDescription)
+    }
 }
