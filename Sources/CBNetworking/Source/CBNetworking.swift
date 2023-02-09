@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     private let decoder: JSONDecoder
@@ -36,6 +37,34 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
             logger?.log(error: error)
             return try await shouldRetrySend(endpoint: endpoint, error: error)
         }
+    }
+    
+    public func send<T: Decodable>(endpoint: Endpoint) -> AnyPublisher<T, Error> {
+        guard
+            let request = try? getRequest(from: endpoint)
+        else {
+            return Fail(error: CBNetworkingError.invalidUrl)
+                .eraseToAnyPublisher()
+        }
+        
+        logger?.log(request: request)
+        
+        return urlSession.dataTaskPublisher(for: request)
+            .mapError { CBNetworkingError.transportError($0) }
+            .tryMap { (data, response) -> (data: Data, response: URLResponse) in
+                guard let urlResponse = response as? HTTPURLResponse else {
+                    throw CBNetworkingError.invalidResponse
+                }
+                
+                if (200...299) ~=  urlResponse.statusCode {
+                    return (data, response)
+                } else {
+                    throw CBNetworkingError.invalidHTTPStatusCode
+                }
+            }
+            .map(\.data)
+            .decode(type: T.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
     }
     
     // MARK: - Internal
