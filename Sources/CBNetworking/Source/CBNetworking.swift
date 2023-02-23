@@ -24,7 +24,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         self.retryable = retryable
     }
     
-    public func send<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> (model: T, response: URLResponse)  {
+    public func send<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> (model: T, response: HTTPURLResponse)  {
         let request = try getRequest(from: endpoint)
         
         logger?.log(request: request)
@@ -32,7 +32,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         do {
             let (data, urlResponse) = try await urlSession.data(from: request)
             let model = try decoder.decode(T.self, from: data)
-            return (model: model, response: urlResponse)
+            return (model: model, response: urlResponse as! HTTPURLResponse)
         } catch {
             logger?.log(error: error)
             return try await shouldRetrySend(endpoint: endpoint, error: error, type: type)
@@ -84,7 +84,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
             .build()
     }
 
-    func shouldRetrySend<T: Decodable>(endpoint: Endpoint, error: Error, type: T.Type) async throws -> (model: T, response: URLResponse) {
+    func shouldRetrySend<T: Decodable>(endpoint: Endpoint, error: Error, type: T.Type) async throws -> (model: T, response: HTTPURLResponse) {
         guard let retryable = retryable else { throw error }
         
         switch try await retryable.retry(endpoint, forError: error) {
