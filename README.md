@@ -87,7 +87,9 @@ extension TestEndpoint: EndpointType {
 Then you can make the network call:
 
 ```swift
-let article: Article = try await networking.send(endpoint: .getArticle(id: 1))
+let response = try await networking.send(endpoint: .getArticle(id: 1))
+let myModel = response.model
+let urlResponse = response.response
 ```
 
 # How to use a RequestAdapter

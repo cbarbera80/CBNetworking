@@ -8,14 +8,14 @@ final class CBNetworkingTests: XCTestCase {
     func testForEndpointType() async throws {
         MockURLProtocol.data = Self.articleData
         let sut = getSUT()
-        let data: Article = try await sut.send(endpoint: .getArticles)
+        let data: Article = try await sut.send(endpoint: .getArticles).model
         XCTAssertEqual(data.name, "Article 1")
     }
     
     func testForEndpoint1Type() async throws {
         MockURLProtocol.data = Self.articleData
         let sut = getSUT()
-        let data: Article = try await sut.send(endpoint: .postArticle(article: Article(name: "Article 1")))
+        let data: Article = try await sut.send(endpoint: .postArticle(article: Article(name: "Article 1"))).model
         XCTAssertEqual(data.name, "Article 1")
     }
     
