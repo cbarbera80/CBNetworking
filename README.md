@@ -87,7 +87,7 @@ extension TestEndpoint: EndpointType {
 Then you can make the network call:
 
 ```swift
-let response = try await networking.send(endpoint: .getArticle(id: 1))
+let response = try await networking.send(endpoint: .getArticle(id: 1), type: Article.self)
 let myModel = response.model
 let urlResponse = response.response
 ```
