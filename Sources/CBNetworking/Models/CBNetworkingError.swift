@@ -6,4 +6,5 @@ public enum CBNetworkingError: Error {
     case transportError(Error)
     case invalidResponse
     case invalidHTTPStatusCode
+    case unauthorized
 }

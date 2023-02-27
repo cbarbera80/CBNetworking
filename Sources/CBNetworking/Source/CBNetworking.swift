@@ -73,6 +73,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
                 
                 if (200...299) ~=  urlResponse.statusCode {
                     return (data, response)
+                } else if urlResponse.statusCode == 401 || urlResponse.statusCode == 403 {
+                    throw CBNetworkingError.unauthorized
                 } else {
                     throw CBNetworkingError.invalidHTTPStatusCode
                 }
