@@ -6,7 +6,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     private let urlSession: URLSession
     private let adapters: [RequestAdapter]?
     private let logger: Loggable?
-    private let retryable: Retryable?
+    public var retryable: Retryable?
     
     // MARK: - Public
     
