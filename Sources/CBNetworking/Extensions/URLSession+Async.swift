@@ -1,5 +1,8 @@
 import Foundation
 
+enum NetworkError: Error {
+    case error(parent: Error, httpStatusCode: Int)
+}
 extension URLSession {
     func data(from request: URLRequest) async throws -> (Data, URLResponse) {
         try await withCheckedThrowingContinuation { continuation in
@@ -15,7 +18,8 @@ extension URLSession {
                 if isValidStatusCode {
                     continuation.resume(returning: (data, response))
                 } else {
-                    continuation.resume(throwing: error ?? URLError(.badServerResponse))
+                    let e = NetworkError.error(parent: error ?? URLError(.badServerResponse), httpStatusCode: urlResponse.statusCode)
+                    continuation.resume(throwing: e)
                 }
             }
 
