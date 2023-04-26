@@ -1,8 +1,9 @@
 import Foundation
 
-enum NetworkError: Error {
+public enum NetworkError: Error {
     case error(parent: Error, httpStatusCode: Int)
 }
+
 extension URLSession {
     func data(from request: URLRequest) async throws -> (Data, URLResponse) {
         try await withCheckedThrowingContinuation { continuation in
