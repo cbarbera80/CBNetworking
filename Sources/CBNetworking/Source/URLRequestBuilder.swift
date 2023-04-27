@@ -10,8 +10,11 @@ class URLRequestBuilder {
     var httpBody: HTTPBodyType?
     var timeInterval: TimeInterval = 100
     
-    init(with baseURL: URL) {
+    private let encoder: JSONEncoder
+    
+    init(with baseURL: URL, encoder: JSONEncoder = JSONEncoder()) {
         self.baseURL = baseURL
+        self.encoder = encoder
     }
     
     @discardableResult
@@ -127,7 +130,7 @@ class URLRequestBuilder {
             return httpMultipartData as Data
             
         case .jsonEncodable(let data):
-            return try? JSONEncoder().encode(data)
+            return try? encoder.encode(data)
         case .urlEncodable(let data):
             return data.urlEncodedParameters?.data(using: .utf8)
         }

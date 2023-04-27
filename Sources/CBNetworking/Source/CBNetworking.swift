@@ -3,6 +3,7 @@ import Combine
 
 public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     private let decoder: JSONDecoder
+    private let encoder: JSONEncoder
     private let urlSession: URLSession
     private let adapters: [RequestAdapter]?
     private let logger: Loggable?
@@ -12,12 +13,14 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     
     public init(
         decoder: JSONDecoder = JSONDecoder(),
+        encoder: JSONEncoder = JSONEncoder(),
         urlSession: URLSession = .shared,
         adapters: [RequestAdapter]? = nil,
         logger: Loggable? = nil,
         retryable: Retryable? = nil
     ) {
         self.decoder = decoder
+        self.encoder = encoder
         self.urlSession = urlSession
         self.adapters = adapters
         self.logger = logger
@@ -104,7 +107,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     }
     
     func buildURLRequest(for request: Endpoint) throws -> URLRequest {
-        try URLRequestBuilder(with: request.baseURL)
+        try URLRequestBuilder(with: request.baseURL, encoder: encoder)
             .set(path: request.path)
             .set(method: request.method)
             .set(headers: request.headers)
