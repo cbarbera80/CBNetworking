@@ -19,7 +19,7 @@ extension URLSession {
                 if isValidStatusCode {
                     continuation.resume(returning: (data, response))
                 } else {
-                    let e = NetworkError.error(parent: error ?? URLError(.badServerResponse), httpStatusCode: urlResponse.statusCode)
+                    let e = NetworkError.error(parent: error ?? CBNetworkingError.invalidHTTPStatusCode(data: data), httpStatusCode: urlResponse.statusCode)
                     continuation.resume(throwing: e)
                 }
             }

@@ -92,7 +92,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
                 } else if urlResponse.statusCode == 401 || urlResponse.statusCode == 403 {
                     throw CBNetworkingError.unauthorized
                 } else {
-                    throw CBNetworkingError.invalidHTTPStatusCode
+                    throw CBNetworkingError.invalidHTTPStatusCode(data: data)
                 }
             }
             .map(\.data)
