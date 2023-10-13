@@ -8,4 +8,5 @@ public protocol EndpointType {
     var httpBody: HTTPBodyType? { get }
     var queryItems: [URLQueryItem]? { get }
     var headers: [String: Any]? { get }
+    var shouldRetryOnFailure: Bool { get }
 }
