@@ -42,7 +42,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
-    public func send<T: Decodable, E: Error & Decodable>(endpoint: Endpoint, error: E) async throws -> T {
+    public func send<T: Decodable, E: Error & Decodable>(endpoint: Endpoint, error: E.Type) async throws -> T {
         let request = try getRequest(from: endpoint)
         
         logger?.log(request: request)
