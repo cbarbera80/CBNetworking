@@ -42,6 +42,32 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
+    public func send<T: Decodable, E: Error & Decodable>(endpoint: Endpoint, error: E) async throws -> T {
+        let request = try getRequest(from: endpoint)
+        
+        logger?.log(request: request)
+        
+        do {
+            let (data, _) = try await urlSession.data(from: request)
+            let model = try decoder.decode(T.self, from: data)
+            return model
+        } catch let NetworkError.error(associatedError, _) {
+            let networkingError = associatedError as! CBNetworkingError
+            
+            switch networkingError {
+            case .invalidHTTPStatusCode(let data):
+                let e = try decoder.decode(E.self, from: data)
+                throw e
+                
+            default:
+                throw networkingError
+            }
+        }  catch {
+            logger?.log(error: error)
+            return try await shouldRetrySend(endpoint: endpoint, error: error)
+        }
+    }
+    
     public func send<T: Decodable>(endpoint: Endpoint) async throws -> T {
         let request = try getRequest(from: endpoint)
         
