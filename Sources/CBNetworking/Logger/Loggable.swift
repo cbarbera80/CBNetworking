@@ -4,11 +4,11 @@ import Foundation
 public protocol Loggable {
     func log(request: URLRequest)
     func log(error: Error)
-    func log(error: Error, statusCode: Int)
+    func log(request: URLRequest, error: Error, statusCode: Int)
 }
 
 public extension Loggable {
     func log(request: URLRequest) {}
     func log(error: Error) {}
-    func log(error: Error, statusCode: Int) {}
+    func log(request: URLRequest, error: Error, statusCode: Int) {}
 }

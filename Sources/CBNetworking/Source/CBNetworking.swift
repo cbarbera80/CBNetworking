@@ -54,7 +54,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         } catch let NetworkError.error(associatedError, statusCode) {
             let networkingError = associatedError as! CBNetworkingError
             
-            logger?.log(error: networkingError, statusCode: statusCode)
+            logger?.log(request: request, error: networkingError, statusCode: statusCode)
             
             switch networkingError {
             case .invalidHTTPStatusCode(let data):
@@ -108,7 +108,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         } catch let NetworkError.error(associatedError, statusCode) {
             let networkingError = associatedError as! CBNetworkingError
             
-            logger?.log(error: networkingError, statusCode: statusCode)
+            logger?.log(request: request, error: networkingError, statusCode: statusCode)
             
             switch networkingError {
             case .invalidHTTPStatusCode(let data):
