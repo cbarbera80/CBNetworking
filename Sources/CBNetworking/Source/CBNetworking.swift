@@ -54,6 +54,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         } catch let NetworkError.error(associatedError, _) {
             let networkingError = associatedError as! CBNetworkingError
             
+            logger?.log(error: networkingError)
+            
             switch networkingError {
             case .invalidHTTPStatusCode(let data):
                 let e = try decoder.decode(E.self, from: data)
