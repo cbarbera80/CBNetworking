@@ -37,7 +37,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
             let model = try decoder.decode(T.self, from: data)
             return (model: model, response: urlResponse as! HTTPURLResponse)
         } catch {
-            logger?.log(error: error)
+            logger?.log(request: request, error: error)
             return try await shouldRetrySend(endpoint: endpoint, error: error, type: type)
         }
     }
@@ -65,7 +65,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
                 throw networkingError
             }
         } catch {
-            logger?.log(error: error)
+            logger?.log(request: request, error: error)
             return try await shouldRetrySend(endpoint: endpoint, error: error)
         }
     }
@@ -80,7 +80,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
             let model = try decoder.decode(T.self, from: data)
             return model
         } catch {
-            logger?.log(error: error)
+            logger?.log(request: request, error: error)
             return try await shouldRetrySend(endpoint: endpoint, error: error)
         }
     }
@@ -93,7 +93,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         do {
             _ = try await urlSession.data(from: request)
         } catch {
-            logger?.log(error: error)
+            logger?.log(request: request, error: error)
             return try await shouldRetrySend(endpoint: endpoint, error: error)
         }
     }
@@ -119,7 +119,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
                 throw networkingError
             }
         } catch {
-            logger?.log(error: error)
+            logger?.log(request: request, error: error)
             return try await shouldRetrySend(endpoint: endpoint, error: error)
         }
     }
