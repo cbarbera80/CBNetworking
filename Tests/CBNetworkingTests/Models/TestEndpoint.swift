@@ -14,6 +14,9 @@ enum TestEndpoint {
 }
 
 extension TestEndpoint: EndpointType {
+    var shouldRetryOnFailure: Bool {
+        false
+    }
     
     var headers: [String : Any]? {
         nil

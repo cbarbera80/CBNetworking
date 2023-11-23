@@ -51,7 +51,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
             let (data, _) = try await urlSession.data(from: request)
             let model = try decoder.decode(T.self, from: data)
             return model
-        } catch let NetworkError.error(associatedError, _) {
+        } catch let NetworkError.error(associatedError, statusCode) {
             let networkingError = associatedError as! CBNetworkingError
             
             logger?.log(error: networkingError)
