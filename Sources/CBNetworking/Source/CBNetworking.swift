@@ -8,6 +8,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     private let adapters: [RequestAdapter]?
     private let logger: Loggable?
     public var retryable: Retryable?
+    let baseURL: URL?
     
     // MARK: - Public
     
@@ -17,7 +18,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         urlSession: URLSession = .shared,
         adapters: [RequestAdapter]? = nil,
         logger: Loggable? = nil,
-        retryable: Retryable? = nil
+        retryable: Retryable? = nil,
+        baseURL: URL? = nil
     ) {
         self.decoder = decoder
         self.encoder = encoder
@@ -25,6 +27,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         self.adapters = adapters
         self.logger = logger
         self.retryable = retryable
+        self.baseURL = baseURL
     }
     
     public func send<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> (model: T, response: HTTPURLResponse)  {
@@ -161,7 +164,7 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     }
     
     func buildURLRequest(for request: Endpoint) throws -> URLRequest {
-        try URLRequestBuilder(with: request.baseURL, encoder: encoder)
+        try URLRequestBuilder(with: baseURL ?? request.baseURL, encoder: encoder)
             .set(path: request.path)
             .set(method: request.method)
             .set(headers: request.headers)
