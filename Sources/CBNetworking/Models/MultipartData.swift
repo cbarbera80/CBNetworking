@@ -3,10 +3,10 @@ import Foundation
 public struct MultipartData {
     public let data: Data
     public let key: String
-    public let fileName: String
-    public let mimeType: String
+    public let fileName: String?
+    public let mimeType: String?
     
-    public init(data: Data, key: String, fileName: String, mimeType: String) {
+    public init(data: Data, key: String, fileName: String? = nil, mimeType: String? = nil) {
         self.data = data
         self.key = key
         self.fileName = fileName
@@ -16,8 +16,16 @@ public struct MultipartData {
     internal func dataFormField(from multipartData: MultipartData) -> Data {
         let fieldData = NSMutableData()
 
-        fieldData.append("Content-Disposition: form-data; name=\"\(key)\"; filename=\"\(fileName)\"\r\n")
-        fieldData.append("Content-Type: \(mimeType)\r\n")
+        if let fileName = multipartData.fileName {
+            fieldData.append("Content-Disposition: form-data; name=\"\(key)\"; filename=\"\(fileName)\"\r\n")
+        } else {
+            fieldData.append("Content-Disposition: form-data; name=\"\(key)\"\"\r\n")
+        }
+        
+        if let mimeType = multipartData.mimeType {
+            fieldData.append("Content-Type: \(mimeType)\r\n")
+        }
+        
         fieldData.append("\r\n")
         fieldData.append(data)
         fieldData.append("\r\n")
