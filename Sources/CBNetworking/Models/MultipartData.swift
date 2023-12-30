@@ -19,7 +19,7 @@ public struct MultipartData {
         if let fileName = multipartData.fileName {
             fieldData.append("Content-Disposition: form-data; name=\"\(key)\"; filename=\"\(fileName)\"\r\n")
         } else {
-            fieldData.append("Content-Disposition: form-data; name=\"\(key)\"\"\r\n")
+            fieldData.append("Content-Disposition: form-data; name=\"\(key)\"\r\n")
         }
         
         if let mimeType = multipartData.mimeType {
