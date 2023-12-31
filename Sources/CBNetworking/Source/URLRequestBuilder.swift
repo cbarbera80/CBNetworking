@@ -66,8 +66,6 @@ class URLRequestBuilder {
     }
     
     func build() throws -> URLRequest {
-        let boundary: String = UUID().uuidString
-        
         guard let url = buildURL() else {
             throw CBNetworkingError.invalidUrl
         }
@@ -99,40 +97,35 @@ class URLRequestBuilder {
         headers?.forEach {
             urlRequest.addValue($0.value as! String, forHTTPHeaderField: $0.key)
         }
+      
+        let body = buildBody()
         
-        if let httpBody, httpBody.isMultipart {
-            urlRequest.addValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        if let httpBody, let boundary = body?.boundary, httpBody.isMultipart {
+            urlRequest.addValue(boundary, forHTTPHeaderField: "Content-Type")
         }
         
-        urlRequest.httpBody = buildBody(boundary: boundary)
+        urlRequest.httpBody = body?.data
         
         return urlRequest
     }
     
-    private func buildBody(boundary: String) -> Data? {
+    private func buildBody() -> (data: Data?, boundary: String?)? {
         
         guard let httpBody else { return nil }
         
         switch httpBody {
         case .raw(let data):
-            return data
-        case .multipart(let multipartData):
-            let httpMultipartData = NSMutableData()
-            
-            httpMultipartData.append("--\(boundary)\r\n")
-            
-            multipartData.forEach { data in
-                httpMultipartData.append(data.dataFormField(from: data))
-            }
-            
-            httpMultipartData.append("--\(boundary)--")
-            
-            return httpMultipartData as Data
+            return (data: data, boundary: nil)
+       
+        case .multipart(let request):
+            return (data: request.httpBody, boundary: request.httpContentTypeHeadeValue)
             
         case .jsonEncodable(let data):
-            return try? encoder.encode(data)
+            return (data: try? encoder.encode(data), boundary: nil)
+            
         case .urlEncodable(let data):
-            return data.urlEncodedParameters?.data(using: .utf8)
+            let d = data.urlEncodedParameters?.data(using: .utf8)
+            return (data: d, boundary: nil)
         }
     }
 }

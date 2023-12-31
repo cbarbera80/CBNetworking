@@ -64,7 +64,16 @@ extension TestEndpoint: EndpointType {
         case .searchArticles(_, let pageData):
             return .jsonEncodable(data: pageData)
         case .postArticle(let article):
-            return .multipart(data: [MultipartData(data: "ciao".data(using: .utf8)!, key: "key", fileName: "article_\(article.name)", mimeType: "mimetype")])
+            var r = MultipartRequest()
+            
+            r.add(
+                key: "key",
+                fileName: "article_\(article.name)",
+                fileMimeType: "mimetype",
+                fileData: "ciao".data(using: .utf8)!
+            )
+            
+            return .multipart(data: r)
         }
     }
 }

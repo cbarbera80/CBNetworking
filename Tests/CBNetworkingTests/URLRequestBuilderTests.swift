@@ -4,7 +4,6 @@ import XCTest
 final class URLRequestBuilderTests: XCTestCase {
     let baseURL = "https//myfakeserver.com/api/v2"
     let endpoint = "articles"
-    let multipartData = MultipartData(data: "ciao".data(using: .utf8)!, key: "key", fileName: "filename", mimeType: "mimetype")
     
     func testValidBaseUrl() async throws {
         let sut = getSUT()
@@ -72,7 +71,9 @@ final class URLRequestBuilderTests: XCTestCase {
     func testMultipartHeader() async throws {
         let sut = getSUT()
         sut.set(path: endpoint)
-        sut.set(httpBody: .multipart(data: [multipartData]))
+        var r = MultipartRequest()
+        r.add(key: "key", value: "value")
+        sut.set(httpBody: .multipart(data: r))
         let request = try sut.build()
         
         XCTAssertEqual(request.allHTTPHeaderFields?.count, 1)
@@ -81,7 +82,9 @@ final class URLRequestBuilderTests: XCTestCase {
     func testMultipartBody() async throws {
         let sut = getSUT()
         sut.set(path: endpoint)
-        sut.set(httpBody: .multipart(data: [multipartData]))
+        var r = MultipartRequest()
+        r.add(key: "key", value: "value")
+        sut.set(httpBody: .multipart(data: r))
         let request = try sut.build()
         
         XCTAssertGreaterThan(request.httpBody!.count, 0)
