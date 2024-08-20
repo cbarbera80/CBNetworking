@@ -30,8 +30,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         self.baseURL = baseURL
     }
     
-    public func send<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> (model: T, response: HTTPURLResponse)  {
-        let request = try getRequest(from: endpoint)
+    public func send<T: Decodable>(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil, type: T.Type) async throws -> (model: T, response: HTTPURLResponse)  {
+        let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
         
         logger?.log(request: request)
         
@@ -45,8 +45,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
-    public func send<T: Decodable, E: Error & Decodable>(endpoint: Endpoint, type: T.Type, error: E.Type) async throws -> (model: T, response: HTTPURLResponse)  {
-        let request = try getRequest(from: endpoint)
+    public func send<T: Decodable, E: Error & Decodable>(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil, type: T.Type, error: E.Type) async throws -> (model: T, response: HTTPURLResponse)  {
+        let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
         
         logger?.log(request: request)
         
@@ -73,8 +73,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
-    public func send<T: Decodable, E: Error & Decodable>(endpoint: Endpoint, error: E.Type) async throws -> T {
-        let request = try getRequest(from: endpoint)
+    public func send<T: Decodable, E: Error & Decodable>(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil, error: E.Type) async throws -> T {
+        let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
         
         logger?.log(request: request)
         
@@ -101,8 +101,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
-    public func send<T: Decodable>(endpoint: Endpoint) async throws -> T {
-        let request = try getRequest(from: endpoint)
+    public func send<T: Decodable>(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil) async throws -> T {
+        let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
         
         logger?.log(request: request)
         
@@ -116,8 +116,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
-    public func send(endpoint: Endpoint) async throws {
-        let request = try getRequest(from: endpoint)
+    public func send(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil) async throws {
+        let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
         
         logger?.log(request: request)
         
@@ -129,8 +129,8 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
-    public func send<E: Error & Decodable>(endpoint: Endpoint, error: E.Type) async throws {
-        let request = try getRequest(from: endpoint)
+    public func send<E: Error & Decodable>(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil, error: E.Type) async throws {
+        let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
         
         logger?.log(request: request)
         
@@ -155,9 +155,9 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
-    public func send<T: Decodable>(endpoint: Endpoint) -> AnyPublisher<T, Error> {
+    public func send<T: Decodable>(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil) -> AnyPublisher<T, Error> {
         guard
-            let request = try? getRequest(from: endpoint)
+            let request = try? getRequest(from: endpoint, cachePolicy: cachePolicy)
         else {
             return Fail(error: CBNetworkingError.invalidUrl)
                 .eraseToAnyPublisher()
@@ -187,12 +187,12 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
     
     // MARK: - Internal
     
-    func getRequest(from endpoint: Endpoint) throws -> URLRequest {
-        try buildURLRequest(for: endpoint)
+    func getRequest(from endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy?) throws -> URLRequest {
+        try buildURLRequest(for: endpoint, cachePolicy: cachePolicy)
     }
     
-    func buildURLRequest(for request: Endpoint) throws -> URLRequest {
-        try URLRequestBuilder(with: baseURL ?? request.baseURL, encoder: encoder)
+    func buildURLRequest(for request: Endpoint, cachePolicy: URLRequest.CachePolicy?) throws -> URLRequest {
+        var request = try URLRequestBuilder(with: baseURL ?? request.baseURL, encoder: encoder)
             .set(path: request.path)
             .set(method: request.method)
             .set(headers: request.headers)
@@ -200,6 +200,12 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
             .set(queryItems: request.queryItems)
             .add(adapters: adapters)
             .build()
+        
+        if let cachePolicy = cachePolicy {
+            request.cachePolicy = cachePolicy
+        }
+        
+        return request
     }
 
     func shouldRetrySend<T: Decodable>(endpoint: Endpoint, error: Error, type: T.Type) async throws -> (model: T, response: HTTPURLResponse) {

@@ -22,7 +22,7 @@ final class CBNetworkingTests: XCTestCase {
     func testAdaptedRequest() async throws {
         MockURLProtocol.data = Self.articleData
         let sut = getSUT()
-        let request = try sut.getRequest(from: .getArticles)
+        let request = try sut.getRequest(from: .getArticles, cachePolicy: nil)
         XCTAssertEqual(request.allHTTPHeaderFields!.count, 1)
     }
     
