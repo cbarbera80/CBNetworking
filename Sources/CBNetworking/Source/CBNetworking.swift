@@ -116,6 +116,20 @@ public class CBNetworking<Endpoint: EndpointType>: CBNetworkingProtocol {
         }
     }
     
+    public func send(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil) async throws -> Data {
+        let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
+        
+        logger?.log(request: request)
+        
+        do {
+            let (data, _) = try await urlSession.data(from: request)
+            return data
+        } catch {
+            logger?.log(request: request, error: error)
+            return try await shouldRetrySend(endpoint: endpoint, error: error)
+        }
+    }
+    
     public func send(endpoint: Endpoint, cachePolicy: URLRequest.CachePolicy? = nil) async throws {
         let request = try getRequest(from: endpoint, cachePolicy: cachePolicy)
         
